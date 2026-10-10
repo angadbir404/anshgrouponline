@@ -182,6 +182,29 @@ h("div",{className:"bar"},cs.map(c=>h("a",{key:c,href:"#/shop"+(c=="All"?"":"/"+
 h("div",{className:"bar"},h("input",{className:"in-s",placeholder:"Search specs, brands, parts…",value:q,onChange:e=>sq(e.target.value)}),h("select",{className:"chip",value:s,onChange:e=>ss(e.target.value)},h("option",{value:"rec"},"Recommended"),h("option",{value:"lo"},"Price: low to high"),h("option",{value:"hi"},"Price: high to low"))),
 l.length?h("div",{className:"grid"},l.map(p=>h(Card,{key:p.id,p,add,view}))):h("p",null,"Nothing matched. Try a different search.")))}
 function Seller(){useEffect(reveal,[]);const S=SELLER;
+const dlCV=async(e)=>{
+  e.preventDefault();
+  try{
+    const r=await fetch(S.cv);
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const b=await r.blob();
+    const u=URL.createObjectURL(new Blob([b],{type:"application/pdf"}));
+    const a=document.createElement("a");
+    a.href=u;
+    a.download="Harjit-Singh-CV.pdf";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},500);
+  }catch(_){
+    const a=document.createElement("a");
+    a.href=S.cv;
+    a.download="Harjit-Singh-CV.pdf";
+    a.target="_blank";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>a.remove(),500);
+  }
+};
 return h("div",{className:"sh"},h("div",{className:"w"},h("div",{className:"eyebrow"},"Know your seller"),h("h1",{style:{margin:"16px 0 20px"}},"Hi, I'm ",S.name.split(" ")[0],"."),h("p",{style:{maxWidth:"56ch",fontSize:"1.1rem"}},S.bio),
 h("div",{className:"stats"},S.stats.map((s,i)=>h("div",{key:i,"data-r":1},h("b",null,s[0]),h("span",null,s[1])))),
 h("div",{className:"sg"},h("div",{className:"stick"},h("div",{className:"card","data-r":1},h("div",{className:"mono"},S.name[0]),h("h3",{style:{fontSize:"1.4rem",letterSpacing:"-.03em"}},S.name),h("p",{style:{fontSize:".9rem",margin:"4px 0 18px"}},S.role),
@@ -189,7 +212,7 @@ h("div",{className:"bdg",style:{marginBottom:20}},["In business since "+S.since,
 h("p",{style:{fontSize:".88rem"}},"Based in "+S.city),h("p",{style:{fontSize:".88rem",overflowWrap:"anywhere"}},"Email: ",h("a",{href:"mailto:"+S.email,style:{color:"var(--ac)",textDecoration:"underline"}},S.email)),S.gst&&h("p",{style:{fontSize:".88rem"}},"GSTIN: "+S.gst),
 h("div",{style:{display:"flex",gap:10,flexWrap:"wrap",marginTop:20}},h("a",{className:"btn",href:"https://wa.me/"+S.phone,"data-c":"chat"},"WhatsApp"),h("a",{className:"btn o",href:"tel:+"+S.call},"Call"),h("a",{className:"btn o",href:"mailto:"+S.email},"Email")))),
 h("div",{style:{display:"flex",flexDirection:"column",gap:48}},
-h("div",{className:"cv","data-r":1},h("svg",{viewBox:"0 0 24 24",strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M14 3H6v18h12V7zM14 3v4h4M9 12h6M9 16h6"})),h("div",null,h("h4",{style:{fontSize:"1.1rem"}},"Curriculum Vitae"),h("p",{style:{fontSize:".85rem"}},"Full résumé of the seller, available as PDF.")),h("a",{className:"btn",href:S.cv,download:true,"data-c":"cv"},"Download CV ↓")),
+h("div",{className:"cv","data-r":1},h("svg",{viewBox:"0 0 24 24",strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M14 3H6v18h12V7zM14 3v4h4M9 12h6M9 16h6"})),h("div",null,h("h4",{style:{fontSize:"1.1rem"}},"Curriculum Vitae"),h("p",{style:{fontSize:".85rem"}},"Full résumé of the seller (Harjit-Singh-CV.pdf).")),h("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},h("a",{className:"btn",href:S.cv,download:"Harjit-Singh-CV.pdf",target:"_blank",rel:"noopener","data-c":"cv",onClick:dlCV},"Download CV ↓"),h("a",{className:"btn o",href:S.cv,target:"_blank",rel:"noopener","data-c":"view"},"Open PDF ↗"))),
 h("div",null,h("h2",{"data-r":1,style:{fontSize:"2rem",margin:"0 0 24px"}},"What I do best"),h("div",{className:"stg"},S.strengths.map(x=>h("div",{key:x[0],"data-r":1},h("h4",null,x[0]),h("p",{style:{fontSize:".85rem"}},x[1]))))),
 h("div",{"data-r":1},h("h2",{style:{fontSize:"2rem",margin:"0 0 24px"}},"Experience"),h("div",{className:"tl"},S.exp.map((e,i)=>h("div",{key:i},h("small",null,e[0]),h("h4",null,e[1]),h("p",{style:{fontSize:".9rem"}},e[2]))))),
 h("div",{"data-r":1},h("h2",{style:{fontSize:"2rem",margin:"0 0 24px"}},"Certifications & recognition"),S.edu.map((e,i)=>h("p",{key:i,style:{padding:"12px 0",borderBottom:"1px solid var(--line)",color:"var(--ink)"}},e))),

@@ -115,7 +115,12 @@ const server = http.createServer(async (req, res) => {
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+    const headers = { 'Content-Type': contentType };
+    if (ext === '.pdf') {
+      const fileName = path.basename(filePath);
+      headers['Content-Disposition'] = `attachment; filename="${fileName}"`;
+    }
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
   } else {
     // Fallback to index.html for SPA hash navigation

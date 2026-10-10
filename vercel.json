@@ -1,1 +1,18 @@
-{"cleanUrls":true}
+{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/cv/(.*)\\.pdf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Harjit-Singh-CV.pdf\""
+        }
+      ]
+    }
+  ]
+}
