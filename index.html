@@ -92,12 +92,13 @@ footer{background:#2a0509;color:#f6ece4;padding:70px 0 40px;margin-top:60px}foot
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="cv-data.js"></script>
 <script>
 const {createElement:h,useState,useEffect,useRef}=React;gsap.registerPlugin(ScrollTrigger);
 /* ===== EDIT ME: seller details (shown on the Know Your Seller page) ===== */
 /* ===== EDIT ME: store + payment config ===== */
 const CFG={whatsapp:"919814222255",gateway:"razorpay"/* or "phonepe" */,apiBase:"/api"};
-const SELLER={name:"Harjit Singh",role:"Admin Manager, Ansh Computers",city:"Tarn Taran, Punjab",since:"2002",phone:CFG.whatsapp,call:"919464760988",email:"ansh_group_tt@yahoo.com",gst:"",cv:"cv/Harjit-Singh-CV.pdf",
+const SELLER={name:"Harjit Singh",role:"Admin Manager, Ansh Computers",city:"Tarn Taran, Punjab",since:"2002",phone:CFG.whatsapp,call:"919464760988",email:"ansh_group_tt@yahoo.com",gst:"",cv:"/api/download-cv",
 bio:"Since 2002 I have run the sales, purchasing and day-to-day operations at Ansh Computers. I buy carefully, price fairly and look after every customer personally, so what you see on this store is what you actually get.",
 stats:[["24+","Years in business"],["2002","Serving customers since"],["3","Languages: English, Hindi, Punjabi"],["Tarn Taran","Punjab, India"]],
 strengths:[["Retail sales","Customer acquisition, product promotion and long-term client relationships."],["Purchase & inventory","Sourcing, stock control and keeping the right products available."],["Business development","Partnerships, revenue growth and new customer channels."],["Marketing","Promotion and branding, backed by Photoshop, Canva and WordPress."],["Operations & admin","Daily operations, scheduling and process optimisation."],["Team leadership","Recruitment, supervision and performance management."]],
@@ -182,28 +183,27 @@ h("div",{className:"bar"},cs.map(c=>h("a",{key:c,href:"#/shop"+(c=="All"?"":"/"+
 h("div",{className:"bar"},h("input",{className:"in-s",placeholder:"Search specs, brands, parts…",value:q,onChange:e=>sq(e.target.value)}),h("select",{className:"chip",value:s,onChange:e=>ss(e.target.value)},h("option",{value:"rec"},"Recommended"),h("option",{value:"lo"},"Price: low to high"),h("option",{value:"hi"},"Price: high to low"))),
 l.length?h("div",{className:"grid"},l.map(p=>h(Card,{key:p.id,p,add,view}))):h("p",null,"Nothing matched. Try a different search.")))}
 function Seller(){useEffect(reveal,[]);const S=SELLER;
-const dlCV=async(e)=>{
-  e.preventDefault();
-  try{
-    const r=await fetch(S.cv);
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const b=await r.blob();
-    const u=URL.createObjectURL(new Blob([b],{type:"application/pdf"}));
-    const a=document.createElement("a");
-    a.href=u;
-    a.download="Harjit-Singh-CV.pdf";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},500);
-  }catch(_){
-    const a=document.createElement("a");
-    a.href=S.cv;
-    a.download="Harjit-Singh-CV.pdf";
-    a.target="_blank";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>a.remove(),500);
+const dlCV=(e)=>{
+  if(e&&e.preventDefault)e.preventDefault();
+  if(window.__CV_PDF_B64){
+    try{
+      const bin=atob(window.__CV_PDF_B64);
+      const arr=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+      const blob=new Blob([arr],{type:"application/pdf"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download="Harjit-Singh-CV.pdf";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},1000);
+      return;
+    }catch(err){
+      console.warn("Falling back to serverless download:",err);
+    }
   }
+  window.location.href="/api/download-cv";
 };
 return h("div",{className:"sh"},h("div",{className:"w"},h("div",{className:"eyebrow"},"Know your seller"),h("h1",{style:{margin:"16px 0 20px"}},"Hi, I'm ",S.name.split(" ")[0],"."),h("p",{style:{maxWidth:"56ch",fontSize:"1.1rem"}},S.bio),
 h("div",{className:"stats"},S.stats.map((s,i)=>h("div",{key:i,"data-r":1},h("b",null,s[0]),h("span",null,s[1])))),
@@ -212,7 +212,7 @@ h("div",{className:"bdg",style:{marginBottom:20}},["In business since "+S.since,
 h("p",{style:{fontSize:".88rem"}},"Based in "+S.city),h("p",{style:{fontSize:".88rem",overflowWrap:"anywhere"}},"Email: ",h("a",{href:"mailto:"+S.email,style:{color:"var(--ac)",textDecoration:"underline"}},S.email)),S.gst&&h("p",{style:{fontSize:".88rem"}},"GSTIN: "+S.gst),
 h("div",{style:{display:"flex",gap:10,flexWrap:"wrap",marginTop:20}},h("a",{className:"btn",href:"https://wa.me/"+S.phone,"data-c":"chat"},"WhatsApp"),h("a",{className:"btn o",href:"tel:+"+S.call},"Call"),h("a",{className:"btn o",href:"mailto:"+S.email},"Email")))),
 h("div",{style:{display:"flex",flexDirection:"column",gap:48}},
-h("div",{className:"cv","data-r":1},h("svg",{viewBox:"0 0 24 24",strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M14 3H6v18h12V7zM14 3v4h4M9 12h6M9 16h6"})),h("div",null,h("h4",{style:{fontSize:"1.1rem"}},"Curriculum Vitae"),h("p",{style:{fontSize:".85rem"}},"Full résumé of the seller (Harjit-Singh-CV.pdf).")),h("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},h("a",{className:"btn",href:S.cv,download:"Harjit-Singh-CV.pdf",target:"_blank",rel:"noopener","data-c":"cv",onClick:dlCV},"Download CV ↓"),h("a",{className:"btn o",href:S.cv,target:"_blank",rel:"noopener","data-c":"view"},"Open PDF ↗"))),
+h("div",{className:"cv","data-r":1},h("svg",{viewBox:"0 0 24 24",strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M14 3H6v18h12V7zM14 3v4h4M9 12h6M9 16h6"})),h("div",null,h("h4",{style:{fontSize:"1.1rem"}},"Curriculum Vitae"),h("p",{style:{fontSize:".85rem"}},"Full résumé of the seller (Harjit-Singh-CV.pdf).")),h("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},h("a",{className:"btn",href:"/api/download-cv",download:"Harjit-Singh-CV.pdf","data-c":"cv",onClick:dlCV},"Download CV ↓"),h("a",{className:"btn o",href:"/api/download-cv?view=1",target:"_blank",rel:"noopener","data-c":"view"},"Open PDF ↗"))),
 h("div",null,h("h2",{"data-r":1,style:{fontSize:"2rem",margin:"0 0 24px"}},"What I do best"),h("div",{className:"stg"},S.strengths.map(x=>h("div",{key:x[0],"data-r":1},h("h4",null,x[0]),h("p",{style:{fontSize:".85rem"}},x[1]))))),
 h("div",{"data-r":1},h("h2",{style:{fontSize:"2rem",margin:"0 0 24px"}},"Experience"),h("div",{className:"tl"},S.exp.map((e,i)=>h("div",{key:i},h("small",null,e[0]),h("h4",null,e[1]),h("p",{style:{fontSize:".9rem"}},e[2]))))),
 h("div",{"data-r":1},h("h2",{style:{fontSize:"2rem",margin:"0 0 24px"}},"Certifications & recognition"),S.edu.map((e,i)=>h("p",{key:i,style:{padding:"12px 0",borderBottom:"1px solid var(--line)",color:"var(--ink)"}},e))),

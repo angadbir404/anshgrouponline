@@ -1,8 +1,18 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/cv/Harjit-Singh-CV.pdf",
+      "destination": "/api/download-cv"
+    },
+    {
+      "source": "/Harjit-Singh-CV.pdf",
+      "destination": "/api/download-cv"
+    }
+  ],
   "headers": [
     {
-      "source": "/cv/(.*)\\.pdf",
+      "source": "/api/download-cv",
       "headers": [
         {
           "key": "Content-Type",
